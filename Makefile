@@ -1,10 +1,11 @@
 #!/usr/bin/make -f
 
 SOURCES := \
-	ltl.ml \
+	ltl.mli ltl.ml \
 	ltl_parser.mly \
 	ltl_lexer.mll \
-	automata.ml \
+	positive_formula.mli positive_formula.ml \
+	alt_buechi.mli alt_buechi.ml \
 	main.ml
 
 OCAMLYACC := menhir

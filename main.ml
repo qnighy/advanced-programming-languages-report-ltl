@@ -1,5 +1,5 @@
 open Ltl
-open Automata
+open Alt_buechi
 
 let () =
   let lexbuf = Lexing.from_channel stdin in
