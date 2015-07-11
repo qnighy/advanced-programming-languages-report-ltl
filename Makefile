@@ -4,6 +4,7 @@ SOURCES := \
 	ltl.ml \
 	ltl_parser.mly \
 	ltl_lexer.mll \
+	automata.ml \
 	main.ml
 
 OCAMLYACC := menhir
