@@ -69,25 +69,25 @@ let buechi_from_alt (am : alt_buechi) =
   m
 
 let pp_buechi atomhash rev_atomhash pf (m : buechi) =
-  Format.printf "@[<hv 2>{";
-  Format.printf "@[alphabet_size@ =@ %d@]@," m.alphabet_size;
-  Format.printf "@[num_states@ =@ %d@]@," m.num_states;
-  Format.printf "@[start@ =@ [";
-  List.iter (Format.printf "%d,@ ") m.start;
-  Format.printf "]@]@,";
+  Format.fprintf pf "@[<hv 2>{";
+  Format.fprintf pf "@[alphabet_size@ =@ %d@]@," m.alphabet_size;
+  Format.fprintf pf "@[num_states@ =@ %d@]@," m.num_states;
+  Format.fprintf pf "@[start@ =@ [";
+  List.iter (Format.fprintf pf "%d,@ ") m.start;
+  Format.fprintf pf "]@]@,";
   for fromstate = 0 to m.num_states-1 do
     for propstate = 0 to m.alphabet_size-1 do
       let next = Hashtbl.find m.next (fromstate, propstate) in
-      Format.printf "@[next(%d,@ @[{" fromstate;
+      Format.fprintf pf "@[next(%d,@ @[{" fromstate;
       for i = 0 to Hashtbl.length atomhash - 1 do
         if ((propstate lsr i) land 1) == 1 then
-          Format.printf "%s,@ " (Hashtbl.find rev_atomhash i)
+          Format.fprintf pf "%s,@ " (Hashtbl.find rev_atomhash i)
       done;
-      Format.printf "}@])@ =@ [";
-      List.iter (Format.printf "%d,@ ") next;
-      Format.printf "];@]@,"
+      Format.fprintf pf "}@])@ =@ [";
+      List.iter (Format.fprintf pf "%d,@ ") next;
+      Format.fprintf pf "];@]@,"
     done;
     let accepts = Hashtbl.find m.accepts fromstate in
-    Format.printf "@[accepts(%d)@ =@ %B@]@," fromstate accepts
+    Format.fprintf pf "@[accepts(%d)@ =@ %B@]@," fromstate accepts
   done;
-  Format.printf "}@]";
+  Format.fprintf pf "}@]";

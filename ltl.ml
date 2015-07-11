@@ -53,23 +53,23 @@ let ltl_impl a b = ltl_disj2 (ltl_neg a) b
 let ltl_equiv a b = ltl_conj2 (ltl_impl a b) (ltl_impl b a)
 
 let rec pp_ltl pf = function
-  | LTLposatom s -> Format.printf "@[%s@]" s
-  | LTLnegatom s -> Format.printf "@[~@[%s@]@]" s
-  | LTLconj [] -> Format.printf "@[True@]"
+  | LTLposatom s -> Format.fprintf pf "@[%s@]" s
+  | LTLnegatom s -> Format.fprintf pf "@[~@[%s@]@]" s
+  | LTLconj [] -> Format.fprintf pf "@[True@]"
   | LTLconj (h::t) ->
-      Format.printf "@[(%a" pp_ltl h;
+      Format.fprintf pf "@[(%a" pp_ltl h;
       List.iter (fun x ->
-        Format.printf "@ /\\@ %a" pp_ltl x) t;
-      Format.printf ")@]"
-  | LTLdisj [] -> Format.printf "@[False@]"
+        Format.fprintf pf "@ /\\@ %a" pp_ltl x) t;
+      Format.fprintf pf ")@]"
+  | LTLdisj [] -> Format.fprintf pf "@[False@]"
   | LTLdisj (h::t) ->
-      Format.printf "@[(%a" pp_ltl h;
+      Format.fprintf pf "@[(%a" pp_ltl h;
       List.iter (fun x ->
-        Format.printf "@ \\/@ %a" pp_ltl x) t;
-      Format.printf ")@]"
+        Format.fprintf pf "@ \\/@ %a" pp_ltl x) t;
+      Format.fprintf pf ")@]"
   | LTLnext a ->
-      Format.printf "@[(Next@ %a)@]" pp_ltl a
+      Format.fprintf pf "@[(Next@ %a)@]" pp_ltl a
   | LTLuntil (a, b) ->
-      Format.printf "@[(%a@ Until@ %a)@]" pp_ltl a pp_ltl b
+      Format.fprintf pf "@[(%a@ Until@ %a)@]" pp_ltl a pp_ltl b
   | LTLrelease (a, b) ->
-      Format.printf "@[(%a@ Release@ %a)@]" pp_ltl a pp_ltl b
+      Format.fprintf pf "@[(%a@ Release@ %a)@]" pp_ltl a pp_ltl b

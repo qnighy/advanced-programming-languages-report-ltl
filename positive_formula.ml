@@ -30,19 +30,19 @@ let pf_conj el = List.fold_right pf_conj2 el pf_top
 let pf_disj el = List.fold_right pf_disj2 el pf_bot
 
 let rec pp_positive_formula pf = function
-  | PFatom x -> Format.printf "@[[%d]@]" x
-  | PFconj [] -> Format.printf "@[True@]"
+  | PFatom x -> Format.fprintf pf "@[[%d]@]" x
+  | PFconj [] -> Format.fprintf pf "@[True@]"
   | PFconj (h::t) ->
-      Format.printf "@[(%a" pp_positive_formula h;
+      Format.fprintf pf "@[(%a" pp_positive_formula h;
       List.iter (fun x ->
-        Format.printf "@ /\\@ %a" pp_positive_formula x) t;
-      Format.printf ")@]"
-  | PFdisj [] -> Format.printf "@[False@]"
+        Format.fprintf pf "@ /\\@ %a" pp_positive_formula x) t;
+      Format.fprintf pf ")@]"
+  | PFdisj [] -> Format.fprintf pf "@[False@]"
   | PFdisj (h::t) ->
-      Format.printf "@[(%a" pp_positive_formula h;
+      Format.fprintf pf "@[(%a" pp_positive_formula h;
       List.iter (fun x ->
-        Format.printf "@ \\/@ %a" pp_positive_formula x) t;
-      Format.printf ")@]"
+        Format.fprintf pf "@ \\/@ %a" pp_positive_formula x) t;
+      Format.fprintf pf ")@]"
 
 let rec clause_impl (cl1 : int list) (cl2 : int list) =
   match cl1, cl2 with
