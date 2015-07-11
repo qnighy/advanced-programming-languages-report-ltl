@@ -4,8 +4,6 @@ type ltl =
   | LTLconj of ltl list
   | LTLdisj of ltl list
   | LTLnext of ltl
-  | LTLfuture of ltl
-  | LTLglobal of ltl
   | LTLuntil of ltl * ltl
   | LTLrelease of ltl * ltl
 
@@ -35,8 +33,8 @@ let ltl_disj2 a b = ltl_intern
   | _, _ -> LTLdisj [a; b]
   end
 let ltl_next a = ltl_intern (LTLnext a)
-let ltl_future a = ltl_intern (LTLfuture a)
-let ltl_global a = ltl_intern (LTLglobal a)
+let ltl_future a = ltl_intern (LTLuntil (ltl_top, a))
+let ltl_global a = ltl_intern (LTLrelease (ltl_bot, a))
 let ltl_until a b = ltl_intern (LTLuntil (a, b))
 let ltl_release a b = ltl_intern (LTLrelease (a, b))
 
@@ -47,8 +45,6 @@ let rec ltl_neg a = ltl_intern
   | LTLconj l -> LTLdisj (List.map ltl_neg l)
   | LTLdisj l -> LTLconj (List.map ltl_neg l)
   | LTLnext a -> LTLnext (ltl_neg a)
-  | LTLfuture a -> LTLglobal (ltl_neg a)
-  | LTLglobal a -> LTLfuture (ltl_neg a)
   | LTLuntil (a, b) -> LTLrelease (ltl_neg a, ltl_neg b)
   | LTLrelease (a, b) -> LTLuntil (ltl_neg a, ltl_neg b)
   end
@@ -63,18 +59,16 @@ let rec pp_ltl pf = function
   | LTLconj (h::t) ->
       Format.printf "@[(%a" pp_ltl h;
       List.iter (fun x ->
-        Format.printf "@ /\\@ %a" pp_ltl x) t
+        Format.printf "@ /\\@ %a" pp_ltl x) t;
+      Format.printf ")@]"
   | LTLdisj [] -> Format.printf "@[False@]"
   | LTLdisj (h::t) ->
       Format.printf "@[(%a" pp_ltl h;
       List.iter (fun x ->
-        Format.printf "@ \\/@ %a" pp_ltl x) t
+        Format.printf "@ \\/@ %a" pp_ltl x) t;
+      Format.printf ")@]"
   | LTLnext a ->
       Format.printf "@[(Next@ %a)@]" pp_ltl a
-  | LTLfuture a ->
-      Format.printf "@[(Future@ %a)@]" pp_ltl a
-  | LTLglobal a ->
-      Format.printf "@[(Global@ %a)@]" pp_ltl a
   | LTLuntil (a, b) ->
       Format.printf "@[(%a@ Until@ %a)@]" pp_ltl a pp_ltl b
   | LTLrelease (a, b) ->

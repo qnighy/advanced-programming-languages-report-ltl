@@ -4,8 +4,6 @@ type ltl =
   | LTLconj of ltl list
   | LTLdisj of ltl list
   | LTLnext of ltl
-  | LTLfuture of ltl
-  | LTLglobal of ltl
   | LTLuntil of ltl * ltl
   | LTLrelease of ltl * ltl
 
