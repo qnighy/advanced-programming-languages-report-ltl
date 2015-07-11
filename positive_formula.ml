@@ -43,3 +43,34 @@ let rec pp_positive_formula pf = function
       List.iter (fun x ->
         Format.printf "@ \\/@ %a" pp_positive_formula x) t;
       Format.printf ")@]"
+
+let rec clause_impl (cl1 : int list) (cl2 : int list) =
+  match cl1, cl2 with
+  | _, [] -> true
+  | _, (cl2h :: cl2t) ->
+      List.mem cl2h cl1 && clause_impl cl1 cl2t
+
+let rec cleanup_dnf = function
+  | [] -> []
+  | h :: t ->
+      if List.exists (fun t0 -> clause_impl h t0) t then
+        cleanup_dnf t
+      else h :: cleanup_dnf t
+
+let rec myuniq = function
+  | [] -> []
+  | [x] -> [x]
+  | x :: y :: z when x == y -> x :: myuniq z
+  | x :: y -> x :: myuniq y
+
+let rec positive_dnf = function
+  | PFatom x -> [[x]]
+  | PFconj el ->
+      List.fold_right
+        (fun dnf1 dnf2 ->
+          cleanup_dnf (
+            List.concat (List.map (fun cl1 -> List.map (fun cl2 ->
+              myuniq (List.merge compare cl1 cl2)) dnf2) dnf1)))
+        (List.map positive_dnf el) [[]]
+  | PFdisj el ->
+      cleanup_dnf (List.concat (List.map positive_dnf el))

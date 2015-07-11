@@ -6,6 +6,7 @@ SOURCES := \
 	ltl_lexer.mll \
 	positive_formula.mli positive_formula.ml \
 	alt_buechi.mli alt_buechi.ml \
+	buechi.mli buechi.ml \
 	main.ml
 
 OCAMLYACC := menhir

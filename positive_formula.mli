@@ -11,3 +11,5 @@ val pf_conj : positive_formula list -> positive_formula
 val pf_disj : positive_formula list -> positive_formula
 
 val pp_positive_formula : Format.formatter -> positive_formula -> unit
+
+val positive_dnf : positive_formula -> int list list
