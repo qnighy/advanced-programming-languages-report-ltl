@@ -21,3 +21,7 @@ val buechi_from_alt : alt_buechi -> buechi
 val pp_buechi :
   (string, int) Hashtbl.t -> (int, string) Hashtbl.t ->
     Format.formatter -> buechi -> unit
+
+val pp_buechi_graphviz :
+  (string, int) Hashtbl.t -> (int, string) Hashtbl.t ->
+    Format.formatter -> buechi -> unit

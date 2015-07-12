@@ -90,4 +90,50 @@ let pp_buechi atomhash rev_atomhash pf (m : buechi) =
     let accepts = Hashtbl.find m.accepts fromstate in
     Format.fprintf pf "@[accepts(%d)@ =@ %B@]@," fromstate accepts
   done;
-  Format.fprintf pf "}@]";
+  Format.fprintf pf "}@]"
+
+let pp_buechi_graphviz atomhash rev_atomhash pf (m : buechi) =
+  Format.fprintf pf "@[<hv 2>digraph {";
+  List.iter (fun x ->
+    Format.fprintf pf "@[start%d@ [label=\"\", shape=none]@]@," x;
+    Format.fprintf pf "@[start%d@ ->@ q%d@]@," x x
+  ) m.start;
+  for state = 0 to m.num_states-1 do
+    let accepts = Hashtbl.find m.accepts state in
+    if accepts then
+      Format.fprintf pf "@[q%d@ [peripheries=2]@]@," state
+    else begin
+      Format.fprintf pf "@[q%d@ []@]@," state
+    end
+  done;
+  for fromstate = 0 to m.num_states-1 do
+    for tostate = 0 to m.num_states-1 do
+      let dnf = ref [] in
+      for propstate = 0 to m.alphabet_size-1 do
+        let next = Hashtbl.find m.next (fromstate, propstate) in
+        if List.mem tostate next then
+          let clause = ref [] in
+          for i = 0 to Hashtbl.length atomhash - 1 do
+            if ((propstate lsr i) land 1) == 1 then
+              clause := (!clause) @ [(i, true)]
+            else
+              clause := (!clause) @ [(i, false)]
+          done;
+          dnf := (!dnf) @ [!clause]
+      done;
+      let dnf = !dnf in
+      if dnf != [] then begin
+        Format.fprintf pf "@[q%d@ ->@ q%d@ [label=\"" fromstate tostate;
+        List.iter (fun cl ->
+          Format.fprintf pf "{";
+          List.iter (fun (i, pos) ->
+            if pos then
+              Format.fprintf pf "%s,@ " (Hashtbl.find rev_atomhash i)
+          ) cl;
+          Format.fprintf pf "},@ "
+        ) dnf;
+        Format.fprintf pf "\"]@]@,"
+      end
+    done;
+  done;
+  Format.fprintf pf "}@]"

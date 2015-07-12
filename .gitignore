@@ -86,3 +86,5 @@ setup.log
 /ltl_lexer.ml
 /ltl_parser.ml
 /ltl_parser.mli
+/*.dot
+/*.png
